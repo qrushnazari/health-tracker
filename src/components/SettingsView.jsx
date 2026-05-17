@@ -9,25 +9,19 @@ export default function SettingsView({ onReload }) {
   const [saved, setSaved] = useState(false)
 
   function save() {
-    localStorage.setItem('ht_token', token)
-    localStorage.setItem('ht_owner', owner)
-    localStorage.setItem('ht_repo', repo)
+    localStorage.setItem('ht_token', token.trim())
+    localStorage.setItem('ht_owner', owner.trim())
+    localStorage.setItem('ht_repo', repo.trim())
     setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-    onReload()
+    setTimeout(() => { setSaved(false); onReload() }, 500)
   }
 
   return (
     <div className="space-y-4 pb-8">
-      <div>
-        <p className="text-subtle font-mono text-xs uppercase tracking-widest">Configuration</p>
-        <h1 className="font-display text-5xl text-text tracking-widest leading-none mt-0.5">SETTINGS</h1>
-      </div>
-
       <div className="bg-surface border border-border rounded-xl p-5 space-y-4">
         <p className="text-xs font-mono text-subtle leading-relaxed">
           Data is stored as <span className="text-accent">logs.json</span> in your GitHub repo.
-          Generate a fine-grained token with <span className="text-accent">Contents: Read & Write</span> access.
+          Generate a fine-grained token at <span className="text-accent">github.com/settings/tokens</span> with <span className="text-accent">Contents: Read &amp; Write</span> on the <span className="text-accent">health-tracker-data</span> repo.
         </p>
 
         <div className="space-y-3">
@@ -77,21 +71,19 @@ export default function SettingsView({ onReload }) {
         </button>
       </div>
 
-      <div className="bg-surface border border-border rounded-xl p-5 space-y-3">
+      <div className="bg-surface border border-border rounded-xl p-5 space-y-2">
         <p className="text-xs font-mono text-subtle uppercase tracking-wider">Targets</p>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: 'Goal weight', value: '76 kg' },
-            { label: 'Daily kcal', value: '1900 kcal' },
-            { label: 'Daily protein', value: '150 g' },
-            { label: 'Fasting target', value: '16 h' },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex justify-between items-center py-1">
-              <span className="text-xs font-mono text-subtle">{label}</span>
-              <span className="font-mono text-sm text-accent">{value}</span>
-            </div>
-          ))}
-        </div>
+        {[
+          { label: 'Goal weight', value: '76 kg' },
+          { label: 'Daily kcal', value: '1900 kcal' },
+          { label: 'Daily protein', value: '150 g' },
+          { label: 'Fasting target', value: '16 h' },
+        ].map(({ label, value }) => (
+          <div key={label} className="flex justify-between items-center py-1 border-b border-border last:border-0">
+            <span className="text-sm font-mono text-subtle">{label}</span>
+            <span className="font-mono text-sm text-accent">{value}</span>
+          </div>
+        ))}
       </div>
 
       <button

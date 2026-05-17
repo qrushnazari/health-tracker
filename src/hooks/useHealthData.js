@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { fetchLogs, saveLogs, getConfig } from '../utils/github'
 
 const today = () => new Date().toISOString().slice(0, 10)
@@ -19,16 +19,21 @@ export function useHealthData() {
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState(null)
+  const [ready, setReady] = useState(false)
 
   const load = useCallback(async () => {
+    const { token } = getConfig()
+    if (!token) {
+      setLoading(false)
+      return
+    }
     try {
       setLoading(true)
       setError(null)
-      const { token } = getConfig()
-      if (!token) { setLoading(false); return }
       const data = await fetchLogs()
       setAllLogs(data.logs || [])
       setSha(data.sha || null)
+      setReady(true)
     } catch (e) {
       setError(e.message)
     } finally {
@@ -36,12 +41,14 @@ export function useHealthData() {
     }
   }, [])
 
-  useEffect(() => { load() }, [load])
+  // Load once on mount
+  useState(() => { load() })
 
   const todayLog = allLogs.find(l => l.date === today()) || emptyDay(today())
 
   const updateToday = useCallback(async (updater) => {
-    const updated = typeof updater === 'function' ? updater(todayLog) : { ...todayLog, ...updater }
+    const current = allLogs.find(l => l.date === today()) || emptyDay(today())
+    const updated = typeof updater === 'function' ? updater(current) : { ...current, ...updater }
     const exists = allLogs.some(l => l.date === today())
     const newLogs = exists
       ? allLogs.map(l => l.date === today() ? updated : l)
@@ -62,7 +69,7 @@ export function useHealthData() {
     } finally {
       setSyncing(false)
     }
-  }, [allLogs, sha, todayLog])
+  }, [allLogs, sha])
 
-  return { todayLog, allLogs, loading, syncing, error, updateToday, reload: load }
+  return { todayLog, allLogs, loading, syncing, error, updateToday, reload: load, ready }
 }

@@ -20,7 +20,7 @@ function now() {
   return new Date().toTimeString().slice(0, 5)
 }
 
-export default function TodayView({ log, onUpdate, syncing }) {
+export default function TodayView({ log, onUpdate }) {
   const [showMealModal, setShowMealModal] = useState(false)
   const [showTrainModal, setShowTrainModal] = useState(false)
   const [editingWeight, setEditingWeight] = useState(false)
@@ -72,10 +72,9 @@ export default function TodayView({ log, onUpdate, syncing }) {
           <p className="text-subtle font-mono text-xs uppercase tracking-widest">{dateLabel}</p>
           <h1 className="font-display text-5xl text-text tracking-widest leading-none mt-0.5">TODAY</h1>
         </div>
-        {syncing && (
+        {false && (
           <span className="text-xs font-mono text-accent animate-pulse">SYNCING...</span>
-        )}
-      </div>
+        )}      </div>
 
       {/* Stats bar */}
       <div className="grid grid-cols-4 gap-2">

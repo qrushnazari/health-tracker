@@ -2,9 +2,9 @@ const BASE = 'https://api.github.com'
 
 function getConfig() {
   return {
-    token: localStorage.getItem('ht_token'),
-    owner: localStorage.getItem('ht_owner') || 'qrushnazari',
-    repo: localStorage.getItem('ht_repo') || 'health-tracker-data',
+    token: (localStorage.getItem('ht_token') || '').trim(),
+    owner: (localStorage.getItem('ht_owner') || 'qrushnazari').trim(),
+    repo: (localStorage.getItem('ht_repo') || 'health-tracker-data').trim(),
     path: 'logs.json',
   }
 }
