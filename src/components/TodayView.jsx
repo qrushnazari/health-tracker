@@ -197,7 +197,14 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
               <input
                 type="time"
                 value={log.fastingWindow?.close || ''}
-                onChange={e => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, close: e.target.value } }))}
+                onChange={e => onUpdate(prev => ({
+                  ...prev,
+                  fastingWindow: {
+                    ...prev.fastingWindow,
+                    close: e.target.value,
+                    closeNextDay: prev.fastingWindow?.closeNextDay ?? true,
+                  }
+                }))}
                 className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-text font-mono text-sm focus:border-accent focus:outline-none"
               />
               {log.fastingWindow?.open && !log.fastingWindow?.close && (
@@ -206,10 +213,10 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
                 </button>
               )}
             </div>
-            <label className="flex items-center gap-2 mt-2 cursor-pointer w-fit">
+            <label className={`flex items-center gap-2 mt-2 cursor-pointer w-fit ${log.fastingWindow?.close ? 'visible' : 'invisible'}`}>
               <input
                 type="checkbox"
-                checked={!!log.fastingWindow?.closeNextDay}
+                checked={log.fastingWindow?.closeNextDay ?? true}
                 onChange={e => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, closeNextDay: e.target.checked } }))}
                 className="accent-orange-500 w-3 h-3"
               />
