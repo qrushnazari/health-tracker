@@ -24,6 +24,8 @@ export function useHealthData() {
     try {
       setLoading(true)
       setError(null)
+      const { token } = getConfig()
+      if (!token) { setLoading(false); return }
       const data = await fetchLogs()
       setAllLogs(data.logs || [])
       setSha(data.sha || null)
@@ -47,8 +49,12 @@ export function useHealthData() {
 
     setAllLogs(newLogs)
 
+    const { token } = getConfig()
+    if (!token) return
+
     try {
       setSyncing(true)
+      setError(null)
       const newSha = await saveLogs(newLogs, sha)
       setSha(newSha)
     } catch (e) {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CalendarDays, LineChart, Settings, AlertCircle, Loader2 } from 'lucide-react'
 import { useHealthData } from './hooks/useHealthData'
 import TodayView from './components/TodayView'
@@ -13,12 +13,20 @@ const TABS = [
 
 export default function App() {
   const [tab, setTab] = useState('today')
+  const hasToken = !!localStorage.getItem('ht_token')
   const { todayLog, allLogs, loading, syncing, error, updateToday, reload } = useHealthData()
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
       {/* Content */}
-      <main className="flex-1 max-w-lg mx-auto w-full px-4 pt-6">
+      {!hasToken && (
+          <div className="max-w-lg mx-auto w-full px-4 pt-3">
+            <button onClick={() => setTab('settings')} className="w-full text-xs font-mono text-center py-2 rounded-lg bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-colors">
+              No token configured. Tap to set up GitHub sync.
+            </button>
+          </div>
+        )}
+        <main className="flex-1 max-w-lg mx-auto w-full px-4 pt-6">
         {loading ? (
           <div className="flex items-center justify-center h-64 gap-3 text-subtle font-mono text-sm">
             <Loader2 size={16} className="animate-spin text-accent" />
