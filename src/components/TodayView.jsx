@@ -231,6 +231,7 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
       <QuickLogInput
         onAddMeals={meals => onUpdate(prev => ({ ...prev, meals: [...prev.meals, ...meals] }))}
         onAddTraining={training => onUpdate(prev => ({ ...prev, training: [...prev.training, ...training] }))}
+        onUpdateFasting={fasting => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, ...fasting } }))}
       />
 
       {/* Meals */}
