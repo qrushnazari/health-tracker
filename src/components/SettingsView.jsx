@@ -9,6 +9,10 @@ export default function SettingsView({ onReload }) {
   const [showToken, setShowToken] = useState(false)
   const [ghSaved, setGhSaved] = useState(false)
 
+  const [openaiKey, setOpenaiKey] = useState(localStorage.getItem('openai_key') || '')
+  const [showOpenai, setShowOpenai] = useState(false)
+  const [openaiSaved, setOpenaiSaved] = useState(false)
+
   const [clientId, setClientId] = useState(localStorage.getItem('withings_client_id') || '')
   const [clientSecret, setClientSecret] = useState(localStorage.getItem('withings_client_secret') || '')
   const [showSecret, setShowSecret] = useState(false)
@@ -20,6 +24,12 @@ export default function SettingsView({ onReload }) {
     localStorage.setItem('ht_repo', repo.trim())
     setGhSaved(true)
     setTimeout(() => { setGhSaved(false); onReload() }, 500)
+  }
+
+  function saveOpenAI() {
+    localStorage.setItem('openai_key', openaiKey.trim())
+    setOpenaiSaved(true)
+    setTimeout(() => setOpenaiSaved(false), 1500)
   }
 
   function saveWithingsCredentials() {
@@ -68,6 +78,29 @@ export default function SettingsView({ onReload }) {
         </div>
         <button onClick={saveGitHub} className="w-full bg-accent hover:bg-orange-500 text-black font-display tracking-widest text-lg py-3 rounded-xl transition-colors">
           {ghSaved ? 'SAVED' : 'SAVE & CONNECT'}
+        </button>
+      </div>
+
+      {/* OpenAI */}
+      <div className="bg-surface border border-border rounded-xl p-5 space-y-3">
+        <p className="text-xs font-mono text-subtle uppercase tracking-wider">OpenAI — Quick Log Parser</p>
+        <div>
+          <label className="text-xs font-mono text-subtle uppercase tracking-wider">API Key</label>
+          <div className="relative mt-1">
+            <input
+              type={showOpenai ? 'text' : 'password'}
+              value={openaiKey}
+              onChange={e => setOpenaiKey(e.target.value)}
+              placeholder="sk-..."
+              className="w-full bg-bg border border-border rounded-lg px-3 py-2 pr-10 text-text font-mono text-sm focus:border-accent focus:outline-none"
+            />
+            <button onClick={() => setShowOpenai(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-subtle transition-colors">
+              {showOpenai ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+          </div>
+        </div>
+        <button onClick={saveOpenAI} className="w-full bg-accent hover:bg-orange-500 text-black font-display tracking-widest text-lg py-3 rounded-xl transition-colors">
+          {openaiSaved ? 'SAVED' : 'SAVE KEY'}
         </button>
       </div>
 

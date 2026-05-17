@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Plus, Trash2, Timer, Dumbbell, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react'
 import AddMealModal from './AddMealModal'
 import AddTrainingModal from './AddTrainingModal'
+import QuickLogInput from './QuickLogInput'
 
 const GOAL_WEIGHT = 76
 const PROTEIN_TARGET = 150
@@ -225,6 +226,12 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
           </div>
         </div>
       </div>
+
+      {/* Quick Log */}
+      <QuickLogInput
+        onAddMeals={meals => onUpdate(prev => ({ ...prev, meals: [...prev.meals, ...meals] }))}
+        onAddTraining={training => onUpdate(prev => ({ ...prev, training: [...prev.training, ...training] }))}
+      />
 
       {/* Meals */}
       <div className="bg-surface border border-border rounded-xl p-4 space-y-3">
