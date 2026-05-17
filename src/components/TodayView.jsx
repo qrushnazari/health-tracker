@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Timer, TimerOff, Dumbbell, UtensilsCrossed } from 'lucide-react'
+import { Plus, Trash2, Timer, Dumbbell, UtensilsCrossed } from 'lucide-react'
 import AddMealModal from './AddMealModal'
 import AddTrainingModal from './AddTrainingModal'
 
@@ -147,23 +147,39 @@ export default function TodayView({ log, onUpdate }) {
             <span className="font-display text-accent tracking-wider text-lg">{fastHours}h</span>
           )}
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={openFast}
-            disabled={!!log.fastingWindow?.open}
-            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-border text-sm font-mono text-subtle hover:border-accent hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-          >
-            <Timer size={12} />
-            {log.fastingWindow?.open ? `Opened ${log.fastingWindow.open}` : 'Open Fast'}
-          </button>
-          <button
-            onClick={closeFast}
-            disabled={!log.fastingWindow?.open || !!log.fastingWindow?.close}
-            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-border text-sm font-mono text-subtle hover:border-accent hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-          >
-            <TimerOff size={12} />
-            {log.fastingWindow?.close ? `Closed ${log.fastingWindow.close}` : 'Close Fast'}
-          </button>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs font-mono text-subtle uppercase tracking-wider">Opened</label>
+            <div className="flex gap-2 items-center mt-1">
+              <input
+                type="time"
+                value={log.fastingWindow?.open || ''}
+                onChange={e => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, open: e.target.value } }))}
+                className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-text font-mono text-sm focus:border-accent focus:outline-none"
+              />
+              {!log.fastingWindow?.open && (
+                <button onClick={openFast} className="text-xs font-mono text-accent hover:text-orange-400 whitespace-nowrap transition-colors">
+                  Now
+                </button>
+              )}
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-mono text-subtle uppercase tracking-wider">Closed</label>
+            <div className="flex gap-2 items-center mt-1">
+              <input
+                type="time"
+                value={log.fastingWindow?.close || ''}
+                onChange={e => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, close: e.target.value } }))}
+                className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-text font-mono text-sm focus:border-accent focus:outline-none"
+              />
+              {log.fastingWindow?.open && !log.fastingWindow?.close && (
+                <button onClick={closeFast} className="text-xs font-mono text-accent hover:text-orange-400 whitespace-nowrap transition-colors">
+                  Now
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
