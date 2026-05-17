@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CalendarDays, LineChart, Settings, AlertCircle, Loader2 } from 'lucide-react'
 import { useHealthData } from './hooks/useHealthData'
 import TodayView from './components/TodayView'
 import HistoryView from './components/HistoryView'
 import SettingsView from './components/SettingsView'
+import { handleOAuthCallback, fetchLatestWeight } from './utils/withings'
 
 const TABS = [
   { id: 'today', label: 'Today', icon: CalendarDays },
@@ -15,6 +16,35 @@ export default function App() {
   const [tab, setTab] = useState('today')
   const { todayLog, allLogs, loading, syncing, error, updateToday, reload } = useHealthData()
   const hasToken = !!localStorage.getItem('ht_token')
+
+  // Handle Withings OAuth callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('code')
+    const state = params.get('state')
+    if (!code || !state) return
+
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname)
+
+    handleOAuthCallback(code, state)
+      .then(() => fetchLatestWeight())
+      .then(weight => {
+        if (weight) updateToday({ weight: Math.round(weight * 10) / 10 })
+      })
+      .catch(console.error)
+  }, [])
+
+  // Auto-fetch Withings weight on load if connected and today has no weight
+  useEffect(() => {
+    if (!loading && !todayLog.weight && localStorage.getItem('withings_access_token')) {
+      fetchLatestWeight()
+        .then(weight => {
+          if (weight) updateToday({ weight: Math.round(weight * 10) / 10 })
+        })
+        .catch(console.error)
+    }
+  }, [loading])
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
@@ -56,13 +86,8 @@ export default function App() {
         <nav className="sticky bottom-0 bg-surface/90 backdrop-blur border-t border-border">
           <div className="max-w-lg mx-auto flex">
             {TABS.map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => setTab(id)}
-                className={`flex-1 flex flex-col items-center gap-1 py-3 transition-colors ${
-                  tab === id ? 'text-accent' : 'text-muted hover:text-subtle'
-                }`}
-              >
+              <button key={id} onClick={() => setTab(id)}
+                className={`flex-1 flex flex-col items-center gap-1 py-3 transition-colors ${tab === id ? 'text-accent' : 'text-muted hover:text-subtle'}`}>
                 <Icon size={18} />
                 <span className="font-mono text-xs tracking-wider uppercase">{label}</span>
               </button>
