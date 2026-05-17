@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { fetchLogs, saveLogs } from '../utils/github'
+import { fetchLogs, saveLogs, getConfig } from '../utils/github'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
