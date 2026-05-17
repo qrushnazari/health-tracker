@@ -1,11 +1,25 @@
 import { useState } from 'react'
-import { Plus, Trash2, Timer, Dumbbell, UtensilsCrossed } from 'lucide-react'
+import { Plus, Trash2, Timer, Dumbbell, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react'
 import AddMealModal from './AddMealModal'
 import AddTrainingModal from './AddTrainingModal'
 
 const GOAL_WEIGHT = 76
 const PROTEIN_TARGET = 150
 const KCAL_TARGET = 1900
+const TODAY = new Date().toISOString().slice(0, 10)
+
+function offsetDate(date, days) {
+  const d = new Date(date)
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
+function formatDate(date) {
+  const d = new Date(date)
+  if (date === TODAY) return 'Today'
+  if (date === offsetDate(TODAY, -1)) return 'Yesterday'
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+}
 
 function fastingHours(open, close) {
   if (!open) return null
@@ -21,7 +35,7 @@ function now() {
   return new Date().toTimeString().slice(0, 5)
 }
 
-export default function TodayView({ log, onUpdate }) {
+export default function TodayView({ log, date, onDateChange, onUpdate, syncing }) {
   const [showMealModal, setShowMealModal] = useState(false)
   const [showTrainModal, setShowTrainModal] = useState(false)
   const [editingWeight, setEditingWeight] = useState(false)
@@ -69,13 +83,25 @@ export default function TodayView({ log, onUpdate }) {
     <div className="space-y-4 pb-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-subtle font-mono text-xs uppercase tracking-widest">{dateLabel}</p>
-          <h1 className="font-display text-5xl text-text tracking-widest leading-none mt-0.5">TODAY</h1>
+        <button onClick={() => onDateChange(offsetDate(date, -1))} className="text-muted hover:text-accent transition-colors p-1">
+          <ChevronLeft size={20} />
+        </button>
+        <div className="text-center">
+          <h1 className="font-display text-4xl text-text tracking-widest leading-none">{formatDate(date).toUpperCase()}</h1>
+          {date !== TODAY && (
+            <button onClick={() => onDateChange(TODAY)} className="text-xs font-mono text-accent hover:text-orange-400 transition-colors mt-1 block">
+              Back to today
+            </button>
+          )}
         </div>
-        {false && (
-          <span className="text-xs font-mono text-accent animate-pulse">SYNCING...</span>
-        )}      </div>
+        <button
+          onClick={() => onDateChange(offsetDate(date, 1))}
+          disabled={date >= TODAY}
+          className="text-muted hover:text-accent transition-colors p-1 disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
 
       {/* Stats bar */}
       <div className="grid grid-cols-4 gap-2">

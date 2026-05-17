@@ -14,8 +14,10 @@ const TABS = [
 
 export default function App() {
   const [tab, setTab] = useState('today')
-  const { todayLog, allLogs, loading, syncing, error, updateToday, reload } = useHealthData()
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const { todayLog, allLogs, getLog, loading, syncing, error, updateLog, reload } = useHealthData()
   const hasToken = !!localStorage.getItem('ht_token')
+  const selectedLog = getLog(selectedDate)
 
   // Handle Withings OAuth callback
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function App() {
     handleOAuthCallback(code, state)
       .then(() => fetchLatestWeight())
       .then(weight => {
-        if (weight) updateToday({ weight: Math.round(weight * 10) / 10 })
+        if (weight) updateLog(new Date().toISOString().slice(0, 10), { weight: Math.round(weight * 10) / 10 })
       })
       .catch(console.error)
   }, [])
@@ -74,7 +76,13 @@ export default function App() {
             <SettingsView onReload={reload} />
           </div>
         ) : tab === 'today' ? (
-          <TodayView log={todayLog} onUpdate={updateToday} syncing={syncing} />
+          <TodayView
+            log={selectedLog}
+            date={selectedDate}
+            onDateChange={setSelectedDate}
+            onUpdate={(updater) => updateLog(selectedDate, updater)}
+            syncing={syncing}
+          />
         ) : tab === 'history' ? (
           <HistoryView logs={allLogs} />
         ) : (
