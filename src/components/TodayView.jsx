@@ -3,6 +3,7 @@ import { Plus, Trash2, Timer, Dumbbell, UtensilsCrossed, ChevronLeft, ChevronRig
 import AddMealModal from './AddMealModal'
 import AddTrainingModal from './AddTrainingModal'
 import QuickLogInput from './QuickLogInput'
+import OuraImport from './OuraImport'
 
 const GOAL_WEIGHT = 76
 const PROTEIN_TARGET = 150
@@ -105,12 +106,14 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
       </div>
 
       {/* Stats bar */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {[
           { label: 'KCAL', value: totalKcal, target: KCAL_TARGET, unit: '' },
           { label: 'PROTEIN', value: totalProtein, target: PROTEIN_TARGET, unit: 'g' },
           { label: 'TRAINING', value: totalTrainMin, target: 60, unit: 'm' },
           { label: 'FASTING', value: fastHours, target: 16, unit: 'h' },
+          ...(log.steps ? [{ label: 'STEPS', value: log.steps, target: 10000, unit: '' }] : []),
+          ...(log.readinessScore ? [{ label: 'READINESS', value: log.readinessScore, target: 85, unit: '' }] : []),
         ].map(({ label, value, target, unit }) => {
           const pct = value != null ? Math.min((value / target) * 100, 100) : 0
           const hit = value != null && value >= target
@@ -232,6 +235,13 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
         onAddMeals={meals => onUpdate(prev => ({ ...prev, meals: [...prev.meals, ...meals] }))}
         onAddTraining={training => onUpdate(prev => ({ ...prev, training: [...prev.training, ...training] }))}
         onUpdateFasting={fasting => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, ...fasting } }))}
+      />
+
+      {/* Oura */}
+      <OuraImport
+        date={date}
+        onAddTraining={training => onUpdate(prev => ({ ...prev, training: [...prev.training, ...training] }))}
+        onUpdateActivity={activity => onUpdate(prev => ({ ...prev, ...activity }))}
       />
 
       {/* Meals */}

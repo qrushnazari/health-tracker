@@ -13,6 +13,10 @@ export default function SettingsView({ onReload }) {
   const [showOpenai, setShowOpenai] = useState(false)
   const [openaiSaved, setOpenaiSaved] = useState(false)
 
+  const [ouraToken, setOuraToken] = useState(localStorage.getItem('oura_token') || '')
+  const [showOura, setShowOura] = useState(false)
+  const [ouraSaved, setOuraSaved] = useState(false)
+
   const [clientId, setClientId] = useState(localStorage.getItem('withings_client_id') || '')
   const [clientSecret, setClientSecret] = useState(localStorage.getItem('withings_client_secret') || '')
   const [showSecret, setShowSecret] = useState(false)
@@ -30,6 +34,12 @@ export default function SettingsView({ onReload }) {
     localStorage.setItem('openai_key', openaiKey.trim())
     setOpenaiSaved(true)
     setTimeout(() => setOpenaiSaved(false), 1500)
+  }
+
+  function saveOura() {
+    localStorage.setItem('oura_token', ouraToken.trim())
+    setOuraSaved(true)
+    setTimeout(() => setOuraSaved(false), 1500)
   }
 
   function saveWithingsCredentials() {
@@ -101,6 +111,30 @@ export default function SettingsView({ onReload }) {
         </div>
         <button onClick={saveOpenAI} className="w-full bg-accent hover:bg-orange-500 text-black font-display tracking-widest text-lg py-3 rounded-xl transition-colors">
           {openaiSaved ? 'SAVED' : 'SAVE KEY'}
+        </button>
+      </div>
+
+      {/* Oura */}
+      <div className="bg-surface border border-border rounded-xl p-5 space-y-3">
+        <p className="text-xs font-mono text-subtle uppercase tracking-wider">Oura Ring</p>
+        <p className="text-xs text-subtle font-mono">Get your personal token at <span className="text-accent">cloud.ouraring.com/personal-access-tokens</span></p>
+        <div>
+          <label className="text-xs font-mono text-subtle uppercase tracking-wider">Personal Access Token</label>
+          <div className="relative mt-1">
+            <input
+              type={showOura ? 'text' : 'password'}
+              value={ouraToken}
+              onChange={e => setOuraToken(e.target.value)}
+              placeholder="eyJ..."
+              className="w-full bg-bg border border-border rounded-lg px-3 py-2 pr-10 text-text font-mono text-sm focus:border-accent focus:outline-none"
+            />
+            <button onClick={() => setShowOura(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-subtle transition-colors">
+              {showOura ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+          </div>
+        </div>
+        <button onClick={saveOura} className="w-full bg-accent hover:bg-orange-500 text-black font-display tracking-widest text-lg py-3 rounded-xl transition-colors">
+          {ouraSaved ? 'SAVED' : 'SAVE TOKEN'}
         </button>
       </div>
 
