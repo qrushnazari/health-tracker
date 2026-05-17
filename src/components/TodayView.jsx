@@ -206,6 +206,15 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
                 </button>
               )}
             </div>
+            <label className="flex items-center gap-2 mt-2 cursor-pointer w-fit">
+              <input
+                type="checkbox"
+                checked={!!log.fastingWindow?.closeNextDay}
+                onChange={e => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, closeNextDay: e.target.checked } }))}
+                className="accent-orange-500 w-3 h-3"
+              />
+              <span className="text-xs font-mono text-subtle">next day</span>
+            </label>
           </div>
         </div>
       </div>
