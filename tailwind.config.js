@@ -10,7 +10,7 @@ export default {
       },
       colors: {
         bg: '#0C0C0F',
-        surface: '#141418',
+        surface: 'transparent',
         border: '#1E1E24',
         accent: '#F97316',
         'accent-dim': '#7C3B12',
