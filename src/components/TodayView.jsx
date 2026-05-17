@@ -12,7 +12,8 @@ function fastingHours(open, close) {
   const end = close || new Date().toTimeString().slice(0, 5)
   const [oh, om] = open.split(':').map(Number)
   const [eh, em] = end.split(':').map(Number)
-  const diff = (eh * 60 + em) - (oh * 60 + om)
+  let diff = (eh * 60 + em) - (oh * 60 + om)
+  if (diff < 0) diff += 24 * 60 // overnight fast
   return diff > 0 ? (diff / 60).toFixed(1) : null
 }
 
@@ -149,7 +150,7 @@ export default function TodayView({ log, onUpdate }) {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-mono text-subtle uppercase tracking-wider">Opened</label>
+            <label className="text-xs font-mono text-subtle uppercase tracking-wider">Fast starts</label>
             <div className="flex gap-2 items-center mt-1">
               <input
                 type="time"
@@ -165,7 +166,7 @@ export default function TodayView({ log, onUpdate }) {
             </div>
           </div>
           <div>
-            <label className="text-xs font-mono text-subtle uppercase tracking-wider">Closed</label>
+            <label className="text-xs font-mono text-subtle uppercase tracking-wider">Fast breaks</label>
             <div className="flex gap-2 items-center mt-1">
               <input
                 type="time"
