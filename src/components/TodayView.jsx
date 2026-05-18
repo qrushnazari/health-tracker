@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Timer, Dumbbell, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, Trash2, Timer, Dumbbell, UtensilsCrossed, ChevronLeft, ChevronRight, Sparkles, X } from 'lucide-react'
 import AddMealModal from './AddMealModal'
 import AddTrainingModal from './AddTrainingModal'
 import QuickLogInput from './QuickLogInput'
@@ -42,6 +42,7 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
   const [showTrainModal, setShowTrainModal] = useState(false)
   const [editingWeight, setEditingWeight] = useState(false)
   const [weightInput, setWeightInput] = useState(log.weight ?? '')
+  const [showQuickLog, setShowQuickLog] = useState(false)
 
   const totalKcal = log.meals.reduce((s, m) => s + (m.kcal || 0), 0)
   const totalProtein = log.meals.reduce((s, m) => s + (m.protein || 0), 0)
@@ -238,11 +239,7 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
       </div>
 
       {/* Quick Log */}
-      <QuickLogInput
-        onAddMeals={meals => onUpdate(prev => ({ ...prev, meals: [...prev.meals, ...meals] }))}
-        onAddTraining={training => onUpdate(prev => ({ ...prev, training: [...prev.training, ...training] }))}
-        onUpdateFasting={fasting => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, ...fasting } }))}
-      />
+      {/* moved to FAB bottom sheet */}
 
       {/* Oura */}
       <OuraImport
@@ -325,6 +322,45 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
 
       {showMealModal && <AddMealModal onAdd={addMeal} onClose={() => setShowMealModal(false)} />}
       {showTrainModal && <AddTrainingModal onAdd={addTraining} onClose={() => setShowTrainModal(false)} />}
+
+      {/* FAB */}
+      <button
+        onClick={() => setShowQuickLog(true)}
+        className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-accent hover:bg-orange-500 text-black shadow-lg shadow-orange-900/40 flex items-center justify-center transition-colors"
+        aria-label="Quick log"
+      >
+        <Sparkles size={22} />
+      </button>
+
+      {/* Quick Log bottom sheet */}
+      {showQuickLog && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowQuickLog(false)}
+          />
+          <div className="fixed bottom-0 inset-x-0 z-50 bg-bg border-t border-border rounded-t-2xl pb-8 max-h-[90vh] overflow-y-auto animate-slide-up">
+            <div className="flex items-center justify-between px-4 pt-4 pb-2">
+              <div className="flex items-center gap-2">
+                <Sparkles size={14} className="text-accent" />
+                <p className="text-xs font-mono text-subtle uppercase tracking-widest">Quick Log</p>
+              </div>
+              <button onClick={() => setShowQuickLog(false)} className="text-muted hover:text-subtle transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="w-10 h-1 bg-border rounded-full mx-auto mb-4" />
+            <div className="px-4">
+              <QuickLogInput
+                onAddMeals={meals => onUpdate(prev => ({ ...prev, meals: [...prev.meals, ...meals] }))}
+                onAddTraining={training => onUpdate(prev => ({ ...prev, training: [...prev.training, ...training] }))}
+                onUpdateFasting={fasting => onUpdate(prev => ({ ...prev, fastingWindow: { ...prev.fastingWindow, ...fasting } }))}
+                onClose={() => setShowQuickLog(false)}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

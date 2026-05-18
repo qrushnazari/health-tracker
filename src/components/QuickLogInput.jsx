@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Sparkles, Loader2, Plus } from 'lucide-react'
 import { parseHealthLog } from '../utils/openai'
 
-export default function QuickLogInput({ onAddMeals, onAddTraining, onUpdateFasting }) {
+export default function QuickLogInput({ onAddMeals, onAddTraining, onUpdateFasting, onClose }) {
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState(null)
@@ -37,23 +37,19 @@ export default function QuickLogInput({ onAddMeals, onAddTraining, onUpdateFasti
     }
     setText('')
     setPreview(null)
+    onClose?.()
   }
 
   const hasFasting = preview?.fasting && (preview.fasting.open || preview.fasting.close)
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-4 space-y-3">
-      <div className="flex items-center gap-2">
-        <Sparkles size={14} className="text-accent" />
-        <p className="text-xs font-mono text-subtle uppercase tracking-widest">Quick Log</p>
-      </div>
-
+    <div className="space-y-3">
       <textarea
         value={text}
         onChange={e => { setText(e.target.value); setPreview(null) }}
         onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) parse() }}
         placeholder="e.g. started fasting at 20:00 yesterday, broke fast at 11:30 this morning with a protein shake, then 5 eggs with sucuk, 40 min run and weights..."
-        rows={3}
+        rows={4}
         className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-text text-sm focus:border-accent focus:outline-none resize-none placeholder:text-muted"
       />
 
@@ -77,13 +73,13 @@ export default function QuickLogInput({ onAddMeals, onAddTraining, onUpdateFasti
               <p className="text-xs font-mono text-subtle uppercase tracking-wider">Fasting Window</p>
               <div className="flex gap-2">
                 {preview.fasting.open && (
-                  <div className="flex-1 bg-bg rounded-lg px-3 py-2">
+                  <div className="flex-1 bg-surface border border-border rounded-lg px-3 py-2">
                     <p className="text-xs font-mono text-subtle">starts</p>
                     <p className="font-mono text-sm text-text">{preview.fasting.open}</p>
                   </div>
                 )}
                 {preview.fasting.close && (
-                  <div className="flex-1 bg-bg rounded-lg px-3 py-2">
+                  <div className="flex-1 bg-surface border border-border rounded-lg px-3 py-2">
                     <p className="text-xs font-mono text-subtle">breaks {preview.fasting.closeNextDay ? '(next day)' : ''}</p>
                     <p className="font-mono text-sm text-text">{preview.fasting.close}</p>
                   </div>
@@ -96,7 +92,7 @@ export default function QuickLogInput({ onAddMeals, onAddTraining, onUpdateFasti
             <div className="space-y-1.5">
               <p className="text-xs font-mono text-subtle uppercase tracking-wider">Meals</p>
               {preview.meals.map(m => (
-                <div key={m.id} className="flex items-center gap-2 bg-bg rounded-lg px-3 py-2">
+                <div key={m.id} className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
                   <span className="font-mono text-xs text-muted w-10 shrink-0">{m.time}</span>
                   <span className="text-sm text-text flex-1">{m.description}</span>
                   <span className="font-mono text-xs text-subtle shrink-0">{m.kcal}kcal</span>
@@ -110,7 +106,7 @@ export default function QuickLogInput({ onAddMeals, onAddTraining, onUpdateFasti
             <div className="space-y-1.5">
               <p className="text-xs font-mono text-subtle uppercase tracking-wider">Training</p>
               {preview.training.map(t => (
-                <div key={t.id} className="flex items-center gap-2 bg-bg rounded-lg px-3 py-2">
+                <div key={t.id} className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
                   <span className="font-mono text-xs text-muted w-10 shrink-0">{t.time}</span>
                   <span className="text-sm text-text flex-1">{t.type}</span>
                   <span className="font-mono text-xs text-subtle">{t.duration}min</span>
