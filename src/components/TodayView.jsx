@@ -117,18 +117,25 @@ export default function TodayView({ log, date, onDateChange, onUpdate, syncing }
         ].map(({ label, value, target, unit }) => {
           const pct = value != null ? Math.min((value / target) * 100, 100) : 0
           const hit = value != null && value >= target
+          const remaining = value != null ? Math.max(target - value, 0) : null
           return (
-            <div key={label} className="bg-surface border border-border rounded-xl p-3 space-y-2">
+            <div key={label} className="border border-border rounded-xl p-3 space-y-2">
               <p className="text-xs font-mono text-subtle uppercase tracking-wider">{label}</p>
-              <p className={`font-display text-2xl tracking-wider ${hit ? 'text-accent' : 'text-text'}`}>
-                {value ?? '—'}{value != null ? unit : ''}
-              </p>
+              <div className="flex items-baseline justify-between gap-1">
+                <p className={`font-display text-2xl tracking-wider leading-none ${hit ? 'text-accent' : 'text-text'}`}>
+                  {value != null ? value.toLocaleString() : '—'}{value != null ? unit : ''}
+                </p>
+                <p className="font-mono text-xs text-muted shrink-0">/ {target.toLocaleString()}{unit}</p>
+              </div>
               <div className="h-0.5 bg-border rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${hit ? 'bg-accent' : 'bg-muted'}`}
                   style={{ width: `${pct}%` }}
                 />
               </div>
+              <p className="font-mono text-xs text-subtle">
+                {hit ? <span className="text-accent">Target hit</span> : remaining != null ? `${remaining.toLocaleString()}${unit} left` : '—'}
+              </p>
             </div>
           )
         })}
